@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { JournalService } from '../../core/services/journal.service';
 import { JournalEntry, EntryType } from '../../core/models/journal-entry';
+
 @Component({
   standalone: true,
   selector: 'app-journal-page',
@@ -11,10 +12,12 @@ import { JournalEntry, EntryType } from '../../core/models/journal-entry';
   styleUrls: ['./journal-page.component.css']
 })
 export class JournalPageComponent implements OnInit {
-   entries: JournalEntry[] = [];
+  entries: JournalEntry[] = [];
   form: FormGroup;
   editing: JournalEntry | null = null;
   filter: EntryType | 'all' = 'all';
+  searchQuery: string = '';
+  showForm: boolean = false;
 
   constructor(private js: JournalService, private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -77,12 +80,73 @@ export class JournalPageComponent implements OnInit {
   }
 
   filtered() {
-    if (this.filter === 'all') return this.entries;
-    return this.entries.filter(e => e.type === this.filter);
+    let filtered = this.entries;
+    
+    // Filter by type
+    if (this.filter !== 'all') {
+      filtered = filtered.filter(e => e.type === this.filter);
+    }
+    
+    // Filter by search query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(e => 
+        e.title.toLowerCase().includes(query) ||
+        e.notes?.toLowerCase().includes(query) ||
+        e.tags?.some(tag => tag.toLowerCase().includes(query))
+      );
+    }
+    
+    return filtered;
+  }
+
+  getStats() {
+    const all = this.entries;
+    return {
+      total: all.length,
+      tasks: all.filter(e => e.type === 'task').length,
+      notes: all.filter(e => e.type === 'note').length,
+      events: all.filter(e => e.type === 'event').length,
+      habits: all.filter(e => e.type === 'habit').length,
+      completed: all.filter(e => e.completed).length,
+      pending: all.filter(e => !e.completed && e.type === 'task').length
+    };
+  }
+
+  getEntryTypeIcon(type: EntryType): string {
+    const icons: Record<EntryType, string> = {
+      task: '✓',
+      note: '📝',
+      event: '📅',
+      habit: '🔄'
+    };
+    return icons[type] || '•';
+  }
+
+  getEntryTypeColor(type: EntryType): string {
+    const colors: Record<EntryType, string> = {
+      task: '#3b82f6',
+      note: '#10b981',
+      event: '#f59e0b',
+      habit: '#8b5cf6'
+    };
+    return colors[type] || '#6b7280';
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+    if (!this.showForm) {
+      this.cancelEdit();
+    }
   }
 
   cancelEdit() {
     this.editing = null;
+    this.showForm = false;
     this.form.reset({ type: 'task' });
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
   }
 }
