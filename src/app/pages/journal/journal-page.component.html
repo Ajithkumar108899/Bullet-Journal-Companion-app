@@ -1,0 +1,78 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="card mb-4 p-3 shadow-sm">
+  <h4 class="mb-3">{{ editing ? 'Edit Entry' : 'Add Entry' }}</h4>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="row g-2">
+      <div class="col-md-3">
+        <select class="form-select" formControlName="type">
+          <option value="task">Task</option>
+          <option value="note">Note</option>
+          <option value="event">Event</option>
+          <option value="habit">Habit</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <input class="form-control" formControlName="title" placeholder="Title">
+        <div *ngIf="form.controls['title'].invalid && form.controls['title'].touched" class="text-danger small mt-1">
+          Title is required (min 2 chars).
+        </div>
+      </div>
+      <div class="col-md-3">
+        <input class="form-control" formControlName="date" type="date">
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <textarea class="form-control" formControlName="notes" rows="3" placeholder="Notes (optional)"></textarea>
+    </div>
+
+    <div class="mt-2 d-flex gap-2 align-items-center">
+      <input class="form-control form-control-sm w-50" formControlName="tags" placeholder="tags, comma-separated">
+      <button class="btn btn-primary btn-sm" type="submit">{{ editing ? 'Save' : 'Add' }}</button>
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="cancelEdit()" *ngIf="editing">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<div class="mb-3 d-flex align-items-center gap-2">
+  <label class="form-label mb-0">Filter:</label>
+  <select class="form-select w-auto" [(ngModel)]="filter" name="filter">
+    <option value="all">All</option>
+    <option value="task">Tasks</option>
+    <option value="note">Notes</option>
+    <option value="event">Events</option>
+    <option value="habit">Habits</option>
+  </select>
+</div>
+
+<div *ngIf="filtered().length === 0" class="text-muted">No entries yet.</div>
+
+<div class="row g-3">
+  <div class="col-md-6" *ngFor="let e of filtered()">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <h5 class="card-title mb-1">
+            <span [class.text-decoration-line-through]="e.completed">{{ e.title }}</span>
+            <small class="text-muted ms-2">({{ e.type }})</small>
+          </h5>
+          <div class="text-end">
+            <small class="text-muted">{{ e.date || (e.createdAt | slice:0:10) }}</small>
+          </div>
+        </div>
+        <p class="card-text" *ngIf="e.notes">{{ e.notes }}</p>
+        <div *ngIf="e.tags?.length" class="mb-2">
+          <span *ngFor="let t of e.tags" class="badge bg-secondary me-1">{{ t }}</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-success" (click)="toggle(e.id)">
+            {{ e.completed ? 'Unmark' : 'Complete' }}
+          </button>
+          <button class="btn btn-sm btn-outline-primary" (click)="edit(e)">Edit</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="remove(e.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
