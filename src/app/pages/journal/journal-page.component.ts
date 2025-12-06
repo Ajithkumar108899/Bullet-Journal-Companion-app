@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { JournalService } from '../../core/services/journal.service';
 import { JournalEntry, EntryType } from '../../core/models/journal-entry';
-
 @Component({
   standalone: true,
   selector: 'app-journal-page',
@@ -12,7 +11,7 @@ import { JournalEntry, EntryType } from '../../core/models/journal-entry';
   styleUrls: ['./journal-page.component.css']
 })
 export class JournalPageComponent implements OnInit {
-  entries: JournalEntry[] = [];
+   entries: JournalEntry[] = [];
   form: FormGroup;
   editing: JournalEntry | null = null;
   filter: EntryType | 'all' = 'all';
@@ -29,9 +28,13 @@ export class JournalPageComponent implements OnInit {
 
   ngOnInit() {
     this.load();
+    this.js.list().subscribe(entries => {
+      this.entries = entries;
+    });
   }
 
   load() {
+    
     this.entries = this.js.getAll();
   }
 

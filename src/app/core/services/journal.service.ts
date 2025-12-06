@@ -1,29 +1,31 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { JournalEntry } from '../models/journal-entry';
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 const STORAGE_KEY = 'bjc:entries';
-
 @Injectable({ providedIn: 'root' })
 export class JournalService {
-   private isBrowser: boolean = typeof window !== 'undefined';
   private entries: JournalEntry[] = [];
-
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  private isBrowser: boolean;
+  private base = '/api/journal';
+  constructor(@Inject(PLATFORM_ID) private platformId: object,private http: HttpClient) {
+    
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.load();
   }
 
   private save() {
-    if (!this.isBrowser) {
-      return; // ❗ SSR MODE — skip localStorage
+     if (!this.isBrowser) {
+      return;   // prevents SSR crash
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.entries));
   }
 
   private load() {
-    if (!this.isBrowser) {
-      return; // ❗ SSR MODE — skip localStorage
+     if (!this.isBrowser) {
+      return;   // prevents SSR crash
     }
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -55,17 +57,9 @@ export class JournalService {
     return this.entries.find(e => e.id === id);
   }
 
-  // add(entry: Omit<JournalEntry,'id'|'createdAt'|'updatedAt'>) {
-  //   const now = new Date().toISOString();
-  //   const newEntry: JournalEntry = { ...entry, id: this.uid(), createdAt: now, updatedAt: undefined };
-  //   this.entries.unshift(newEntry);
-  //   this.save();
-  //   return newEntry;
-  // }
-
-   add(entry: Omit<JournalEntry,'id'|'createdAt'|'updatedAt'>) {
+  add(entry: Omit<JournalEntry,'id'|'createdAt'|'updatedAt'>) {
     const now = new Date().toISOString();
-    const newEntry: JournalEntry = { ...entry, id: this.uid(), createdAt: now };
+    const newEntry: JournalEntry = { ...entry, id: this.uid(), createdAt: now, updatedAt: undefined };
     this.entries.unshift(newEntry);
     this.save();
     return newEntry;
@@ -88,21 +82,27 @@ export class JournalService {
     return before !== after;
   }
 
-  // toggleComplete(id: string) {
-  //   const e = this.getById(id);
-  //   if (!e) return null;
-  //   e.completed = !e.completed;
-  //   e.updatedAt = new Date().toISOString();
-  //   this.save();
-  //   return e;
-  // }
   toggleComplete(id: string) {
     const e = this.getById(id);
     if (!e) return null;
-    return this.update(id, { completed: !e.completed });
+    e.completed = !e.completed;
+    e.updatedAt = new Date().toISOString();
+    this.save();
+    return e;
   }
 
   private uid() {
     return Math.random().toString(36).slice(2,10);
+  }
+  list(): Observable<JournalEntry[]> {
+    return this.http.get<JournalEntry[]>(this.base);
+  }
+
+  get(id: string) {
+    return this.http.get<JournalEntry>(`${this.base}/${id}`);
+  }
+
+  create(payload: JournalEntry) {
+    return this.http.post<JournalEntry>(this.base, payload);
   }
 }
