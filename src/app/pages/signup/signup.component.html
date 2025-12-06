@@ -1,0 +1,143 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="signup-container">
+  <div class="signup-card">
+    <div class="signup-header">
+      <h2 class="signup-title">Create Account</h2>
+      <p class="signup-subtitle">Join SoulNote and start your journaling journey</p>
+    </div>
+
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              formControlName="firstName"
+              placeholder="Enter your first name"
+              [class.is-invalid]="signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched">
+            <div *ngIf="signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched" class="invalid-feedback">
+              <span *ngIf="signupForm.get('firstName')?.errors?.['required']">First name is required</span>
+              <span *ngIf="signupForm.get('firstName')?.errors?.['minlength']">First name must be at least 2 characters</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              formControlName="lastName"
+              placeholder="Enter your last name"
+              [class.is-invalid]="signupForm.get('lastName')?.invalid && signupForm.get('lastName')?.touched">
+            <div *ngIf="signupForm.get('lastName')?.invalid && signupForm.get('lastName')?.touched" class="invalid-feedback">
+              <span *ngIf="signupForm.get('lastName')?.errors?.['required']">Last name is required</span>
+              <span *ngIf="signupForm.get('lastName')?.errors?.['minlength']">Last name must be at least 2 characters</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input 
+          type="email" 
+          class="form-control" 
+          formControlName="email"
+          placeholder="Enter your email"
+          [class.is-invalid]="signupForm.get('email')?.invalid && signupForm.get('email')?.touched">
+        <div *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched" class="invalid-feedback">
+          <span *ngIf="signupForm.get('email')?.errors?.['required']">Email is required</span>
+          <span *ngIf="signupForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input 
+          type="tel" 
+          class="form-control" 
+          formControlName="phoneNumber"
+          placeholder="Enter 10-digit phone number"
+          maxlength="10"
+          [class.is-invalid]="signupForm.get('phoneNumber')?.invalid && signupForm.get('phoneNumber')?.touched">
+        <div *ngIf="signupForm.get('phoneNumber')?.invalid && signupForm.get('phoneNumber')?.touched" class="invalid-feedback">
+          <span *ngIf="signupForm.get('phoneNumber')?.errors?.['required']">Phone number is required</span>
+          <span *ngIf="signupForm.get('phoneNumber')?.errors?.['pattern']">Please enter a valid 10-digit phone number</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            class="form-control" 
+            formControlName="password"
+            placeholder="Create a password (min 6 characters)"
+            [class.is-invalid]="signupForm.get('password')?.invalid && signupForm.get('password')?.touched">
+          <button 
+            type="button" 
+            class="password-toggle-btn"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+            <span class="eye-icon" [class.visible]="showPassword">👁️</span>
+          </button>
+        </div>
+        <div *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" class="invalid-feedback">
+          <span *ngIf="signupForm.get('password')?.errors?.['required']">Password is required</span>
+          <span *ngIf="signupForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="showConfirmPassword ? 'text' : 'password'" 
+            class="form-control" 
+            formControlName="confirmPassword"
+            placeholder="Confirm your password"
+            [class.is-invalid]="(signupForm.get('confirmPassword')?.invalid || signupForm.errors?.['passwordMismatch']) && signupForm.get('confirmPassword')?.touched">
+          <button 
+            type="button" 
+            class="password-toggle-btn"
+            (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'">
+            <span class="eye-icon" [class.visible]="showConfirmPassword">👁️</span>
+          </button>
+        </div>
+        <div *ngIf="(signupForm.get('confirmPassword')?.invalid || signupForm.errors?.['passwordMismatch']) && signupForm.get('confirmPassword')?.touched" class="invalid-feedback">
+          <span *ngIf="signupForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
+          <span *ngIf="signupForm.errors?.['passwordMismatch']">Passwords do not match</span>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-primary btn-signup"
+        [disabled]="loading">
+        <span *ngIf="!loading">Create Account</span>
+        <span *ngIf="loading">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Creating account...
+        </span>
+      </button>
+    </form>
+
+    <div class="signup-footer">
+      <p class="text-center mb-0">
+        Already have an account? 
+        <a routerLink="/login" class="link-primary">Sign in here</a>
+      </p>
+    </div>
+  </div>
+</div>
+

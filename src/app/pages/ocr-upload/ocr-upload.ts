@@ -1,15 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { OcrService } from '../../core/services/ocr.service';
 import { HttpClient } from '@angular/common/http';
 import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-ocr-upload',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './ocr-upload.html',
   styleUrl: './ocr-upload.css',
 })
-export class OcrUpload {
+export class OcrUpload implements AfterViewInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  
   preview: string | null = null;
   validated = false;
   scanning = false;
@@ -17,13 +21,19 @@ export class OcrUpload {
   errorMsg: string | null = null;
   file!: File;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private ocrService: OcrService) {}
+
+  ngAfterViewInit() {
+    // ViewChild is now available
+  }
 
   /** -----------------------------
    *  Handle File Upload
    * ------------------------------ */
-  onFile(event: any) {
-    const file = event.target.files[0];
+  onFile(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    
     this.errorMsg = null;
     this.preview = null;
     this.validated = false;
@@ -51,6 +61,10 @@ export class OcrUpload {
     reader.onload = () => {
       this.preview = reader.result as string;
       this.validated = true;
+    };
+    reader.onerror = () => {
+      this.errorMsg = 'Error reading file. Please try again.';
+      this.validated = false;
     };
     reader.readAsDataURL(file);
   }
@@ -86,5 +100,8 @@ export class OcrUpload {
     this.validated = false;
     this.scanning = false;
     this.scannedText = null;
+    if (this.fileInput?.nativeElement) {
+      this.fileInput.nativeElement.value = '';
+    }
   }
 }

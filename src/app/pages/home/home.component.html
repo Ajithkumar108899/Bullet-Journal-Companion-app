@@ -1,0 +1,156 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-background"></div>
+    <div class="container">
+      <div class="row align-items-center min-vh-100">
+        <div class="col-lg-6 hero-content">
+          <div class="hero-badge">
+            <span class="badge-text">✨ Your Digital Journal Companion</span>
+          </div>
+          <h1 class="hero-title">
+            Welcome to <span class="gradient-text">SoulNote</span>
+          </h1>
+          <p class="hero-subtitle">
+            Transform your journaling experience with our powerful digital companion. 
+            Capture thoughts, organize tasks, track events, and scan handwritten notes - all in one beautiful platform.
+          </p>
+          <div class="hero-buttons">
+            <a routerLink="/signup" class="btn btn-primary btn-hero">
+              Get Started Free
+              <span class="btn-icon">→</span>
+            </a>
+            <a routerLink="/login" class="btn btn-outline-light btn-hero">
+              Sign In
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-number">100%</div>
+              <div class="stat-label">Free</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">∞</div>
+              <div class="stat-label">Unlimited Entries</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">24/7</div>
+              <div class="stat-label">Access</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 hero-image">
+          <div class="hero-illustration">
+            <div class="floating-card card-1">
+              <div class="card-icon">📝</div>
+              <div class="card-text">Journal Entries</div>
+            </div>
+            <div class="floating-card card-2">
+              <div class="card-icon">📊</div>
+              <div class="card-text">Dashboard</div>
+            </div>
+            <div class="floating-card card-3">
+              <div class="card-icon">📷</div>
+              <div class="card-text">OCR Scan</div>
+            </div>
+            <div class="main-illustration">
+              <div class="illustration-circle"></div>
+              <div class="illustration-content">
+                <div class="illustration-icon">📔</div>
+                <div class="illustration-text">SoulNote</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Powerful Features</h2>
+        <p class="section-subtitle">Everything you need for modern journaling</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4" *ngFor="let feature of features">
+          <div class="feature-card">
+            <div class="feature-icon">{{ feature.icon }}</div>
+            <h3 class="feature-title">{{ feature.title }}</h3>
+            <p class="feature-description">{{ feature.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section class="benefits-section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="benefits-content">
+            <h2 class="benefits-title">Why Choose SoulNote?</h2>
+            <p class="benefits-intro">
+              We've designed SoulNote to be the perfect companion for your journaling journey. 
+              Simple, powerful, and beautiful - everything you need in one place.
+            </p>
+            <div class="benefits-list">
+              <div class="benefit-item" *ngFor="let benefit of benefits">
+                <div class="benefit-icon">{{ benefit.icon }}</div>
+                <div class="benefit-content">
+                  <h4 class="benefit-title">{{ benefit.title }}</h4>
+                  <p class="benefit-description">{{ benefit.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="benefits-visual">
+            <div class="visual-card card-primary">
+              <div class="visual-icon">📝</div>
+              <div class="visual-text">Create</div>
+            </div>
+            <div class="visual-card card-success">
+              <div class="visual-icon">📊</div>
+              <div class="visual-text">Track</div>
+            </div>
+            <div class="visual-card card-warning">
+              <div class="visual-icon">📷</div>
+              <div class="visual-text">Scan</div>
+            </div>
+            <div class="visual-card card-info">
+              <div class="visual-icon">✅</div>
+              <div class="visual-text">Complete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to Start Your Journaling Journey?</h2>
+        <p class="cta-subtitle">Join thousands of users who are already using SoulNote to organize their lives</p>
+        <div class="cta-buttons">
+          <a routerLink="/signup" class="btn btn-light btn-cta">
+            Create Free Account
+            <span class="btn-icon">✨</span>
+          </a>
+          <a routerLink="/login" class="btn btn-outline-light btn-cta">
+            Sign In to Existing Account
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
