@@ -211,7 +211,7 @@
       </div>
 
       <div class="entry-body" *ngIf="e.notes">
-        <p class="entry-notes">{{ e.notes }}</p>
+        <p class="entry-notes trimTooltip tooltip-content" [title]="e.notes">{{ e.notes | slice:0:20}}</p>
       </div>
 
       <div class="entry-tags" *ngIf="e.tags?.length">
