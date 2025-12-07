@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OcrService } from '../../core/services/ocr.service';
 import { HttpClient } from '@angular/common/http';
-import { timer } from 'rxjs';
+import { catchError, finalize, of, switchMap, timer } from 'rxjs';
 
 @Component({
   selector: 'app-ocr-upload',
@@ -13,7 +13,6 @@ import { timer } from 'rxjs';
 })
 export class OcrUpload implements AfterViewInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  
   preview: string | null = null;
   validated = false;
   scanning = false;
@@ -33,7 +32,6 @@ export class OcrUpload implements AfterViewInit {
   onFile(event: Event) {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
-    
     this.errorMsg = null;
     this.preview = null;
     this.validated = false;
@@ -58,12 +56,15 @@ export class OcrUpload implements AfterViewInit {
 
     // Preview
     const reader = new FileReader();
-    reader.onload = () => {
-      this.preview = reader.result as string;
-      this.validated = true;
+     reader.onload = (e) => {
+      if (e.target?.result) {
+        this.preview = e.target.result as string;
+        this.validated = true;
+      }
     };
-    reader.onerror = () => {
+     reader.onerror = () => {
       this.errorMsg = 'Error reading file. Please try again.';
+      this.preview = null;
       this.validated = false;
     };
     reader.readAsDataURL(file);
@@ -72,24 +73,54 @@ export class OcrUpload implements AfterViewInit {
   /** -----------------------------
    *  Simulated Scan Using Dummy API
    * ------------------------------ */
+  // scan() {
+  //   if (!this.validated) return;
+
+  //   this.scanning = true;
+  //   this.errorMsg = null;
+
+  //   // -------- SIMULATED OCR API CALL -----------
+  //   timer(2000).subscribe(() => {
+  //     this.scanning = false;
+  //     this.scannedText =
+  //       'Dummy OCR Result:\n- This is sample text.\n- The real API will return actual extracted text.';
+  //   });
+
+  //   // For real call:
+  //   // const formData = new FormData();
+  //   // formData.append('file', this.file);
+  //   // this.http.post('https://your-ocr-api.com/scan', formData).subscribe(...)
+  // }
+
   scan() {
-    if (!this.validated) return;
+    if (!this.validated || !this.file) return;
 
     this.scanning = true;
     this.errorMsg = null;
+    this.scannedText = null;
 
-    // -------- SIMULATED OCR API CALL -----------
-    timer(2000).subscribe(() => {
-      this.scanning = false;
-      this.scannedText =
-        'Dummy OCR Result:\n- This is sample text.\n- The real API will return actual extracted text.';
+    const formData = new FormData();
+    formData.append('file', this.file);
+
+    // Replace '/api/ocr/scan' with your server endpoint
+    of(null).pipe(
+      switchMap(() => this.http.post<{ text?: string }>('/api/ocr/scan', formData)),
+      catchError(err => {
+        console.error('OCR upload error', err);
+        this.errorMsg = 'Upload failed. Please try again.';
+        return of(null);
+      }),
+      finalize(() => {
+        this.scanning = false;
+      })
+    ).subscribe(response => {
+      if (response && response.text) {
+        this.scannedText = response.text;
+      } else if (!this.errorMsg) {
+        this.errorMsg = 'No text returned from server.';
+      }
     });
-
-    // For real call:
-    // const formData = new FormData();
-    // formData.append('file', this.file);
-    // this.http.post('https://your-ocr-api.com/scan', formData).subscribe(...)
-  }
+  }  
 
   /** -----------------------------
    *  Clear Everything
