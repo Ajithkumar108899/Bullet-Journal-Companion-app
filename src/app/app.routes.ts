@@ -6,6 +6,8 @@ import { SignupComponent } from './pages/signup/signup.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
 import { authGuard, loginGuard } from './core/guards/auth.guard';
+import { ExtractDataView } from './pages/extract-data-view/extract-data-view';
+import { ConversionEngine } from './pages/features/conversion-engine/conversion-engine';
 
 export const routes: Routes = [
     {
@@ -35,6 +37,16 @@ export const routes: Routes = [
     {
         path: 'scanandupload',
         component: OcrUpload,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'extractdataview',
+        component: ExtractDataView,
+        canActivate: [authGuard]
+    },
+     {
+        path: 'conversion-engine',
+        component: ConversionEngine,
         canActivate: [authGuard]
     },
     {

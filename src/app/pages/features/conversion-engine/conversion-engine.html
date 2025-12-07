@@ -1,0 +1,47 @@
+<div class="conversion-container">
+
+  <div class="header-section">
+    <h2 class="title">⚙️ Conversion Engine</h2>
+    <p class="subtitle">Convert extracted data into multiple export formats</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-wrapper">
+    <div class="spinner-border"></div>
+    <p class="loading-text">Preparing conversions...</p>
+  </div>
+
+  <div *ngIf="!loading" class="conversion-grid">
+
+    <!-- TaskPaper -->
+    <div class="ce-card">
+      <div class="ce-card-header">
+        <span class="ce-icon">🗂️</span>
+        <h5>TaskPaper Export</h5>
+      </div>
+      <pre class="ce-code">{{ data.taskpaper }}</pre>
+      <button class="ce-btn" (click)="downloadAs('taskpaper')">Download</button>
+    </div>
+
+    <!-- Markdown -->
+    <div class="ce-card">
+      <div class="ce-card-header">
+        <span class="ce-icon">📝</span>
+        <h5>Markdown Export</h5>
+      </div>
+      <pre class="ce-code">{{ data.markdown }}</pre>
+      <button class="ce-btn" (click)="downloadAs('markdown')">Download</button>
+    </div>
+
+    <!-- Download All -->
+    <div class="ce-card center-card">
+      <div class="ce-card-header">
+        <span class="ce-icon">📦</span>
+        <h5>Export Everything</h5>
+      </div>
+      <p class="export-text">Download complete report as a bundled file</p>
+      <button class="ce-btn ce-btn-primary" (click)="downloadAll()">Download All</button>
+    </div>
+
+  </div>
+
+</div>

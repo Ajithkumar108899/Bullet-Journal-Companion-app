@@ -1,0 +1,35 @@
+.header h2 {
+  font-weight: 700;
+}
+
+.modern-card {
+  border-radius: 20px;
+  background: #ffffff;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.result-box {
+  background: #f8f9fc;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+.json-box {
+  background: #1e1e1e;
+  color: #00ff95;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  overflow: auto;
+  max-height: 260px;
+}
+
+.animated-fade {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

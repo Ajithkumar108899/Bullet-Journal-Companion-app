@@ -43,6 +43,19 @@ import { AuthService } from '../core/services/auth.service';
               <span class="nav-text">Scan & Upload</span>
             </a>
           </li>
+          <li class="nav-item">
+  <a class="nav-link" routerLink="/extractdataview" routerLinkActive="active" (click)="closeMenu()">
+    <span class="nav-icon">🗂️</span>
+    <span class="nav-text">Extracted Data View</span>
+  </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" routerLink="/conversion-engine" routerLinkActive="active" (click)="closeMenu()">
+    <span class="nav-icon">🔁</span>
+    <span class="nav-text">Conversion Engine</span>
+  </a>
+</li>
+
         </ul>
         
         <div class="user-section">
