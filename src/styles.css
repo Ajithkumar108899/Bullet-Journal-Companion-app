@@ -28,4 +28,7 @@
 .tooltip-content {
   max-width: 300px; /* Adjust the maximum width as needed */
   width: max-content; /* Allows the width to be determined by content up to max-width */
+  white-space: nowrap;     /* single line */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
