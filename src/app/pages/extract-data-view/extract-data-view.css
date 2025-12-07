@@ -1,35 +1,74 @@
-.header h2 {
-  font-weight: 700;
-}
-
-.modern-card {
-  border-radius: 20px;
+/* HEADER BOX */
+.header-box {
   background: #ffffff;
-  animation: fadeIn 0.4s ease-in-out;
+  padding: 30px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
 }
 
-.result-box {
-  background: #f8f9fc;
-  padding: 15px;
+/* MAIN CARD */
+.entry-card {
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 20px;
+  border: 1px solid #f1f1f1;
+  transition: 0.25s ease;
+  cursor: pointer;
+}
+
+.entry-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* SYMBOL ICON BOX */
+.symbol-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: #f4f7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+/* TYPE & STATUS TAGS */
+.tag-type {
+  background: #e3edff;
+  color: #0056d6;
+  font-weight: 600;
+  padding: 6px 12px;
   border-radius: 12px;
-  margin-top: 10px;
 }
 
-.json-box {
-  background: #1e1e1e;
-  color: #00ff95;
-  padding: 20px;
+.tag-status {
+  padding: 6px 12px;
   border-radius: 12px;
-  font-size: 14px;
-  overflow: auto;
-  max-height: 260px;
+  font-weight: 600;
 }
 
-.animated-fade {
-  animation: fadeIn 0.5s ease-in-out;
+.status-completed {
+  background: #e8fce8;
+  color: #1f8b1f;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+.status-progress {
+  background: #fff4d9;
+  color: #c48d00;
+}
+
+.status-none {
+  background: #efefef;
+  color: #666;
+}
+
+/* Smooth Text */
+h5 {
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+small {
+  font-size: 0.8rem;
 }

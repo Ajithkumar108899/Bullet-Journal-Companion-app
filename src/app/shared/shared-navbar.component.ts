@@ -13,7 +13,7 @@ import { AuthService } from '../core/services/auth.service';
       <div class="navbar-brand-section">
         <a class="navbar-brand" routerLink="/dashboard">
           <span class="brand-icon">📔</span>
-          <span class="brand-text">SoulNote</span>
+          <span class="brand-text">MindNote</span>
         </a>
       </div>
       
@@ -40,7 +40,7 @@ import { AuthService } from '../core/services/auth.service';
           <li class="nav-item">
             <a class="nav-link" routerLink="/scanandupload" routerLinkActive="active" (click)="closeMenu()">
               <span class="nav-icon">📷</span>
-              <span class="nav-text">Scan & Upload</span>
+              <span class="nav-text">Scan & Update</span>
             </a>
           </li>
           <li class="nav-item">

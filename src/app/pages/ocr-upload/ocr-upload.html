@@ -7,15 +7,24 @@
 
     <!-- Steps Indicator -->
     <div class="d-flex gap-2 mb-3">
-      <span class="step-badge bg-primary text-white">1. Upload</span>
-      <span class="step-badge" [class.bg-success]="validated">2. Validate</span>
-      <span class="step-badge" [class.bg-success]="scanning">3. Scan</span>
-      <span class="step-badge" [class.bg-success]="scannedText">4. Complete</span>
+      <span class="step-badge" [class.bg-primary]="preview" [class.bg-success]="validated" [class.text-white]="preview">1. Upload</span>
+      <span class="step-badge" [class.bg-success]="validated" [class.text-white]="validated">2. Validate</span>
+      <span class="step-badge" [class.bg-primary]="scanning" [class.bg-success]="scannedText" [class.text-white]="scanning || scannedText">3. Scan</span>
+      <span class="step-badge" [class.bg-success]="scannedText" [class.text-white]="scannedText">4. Complete</span>
     </div>
 
     <!-- Validation/Error Message -->
     <div *ngIf="errorMsg" class="alert alert-danger mt-3 animated-section">
-      {{ errorMsg }}
+      <strong>Error:</strong> {{ errorMsg }}
+      <div *ngIf="errorMsg.includes('403') || errorMsg.includes('forbidden')" class="mt-2">
+        <small>
+          <strong>Possible solutions:</strong><br>
+          • Check if your login session is still valid<br>
+          • Try logging out and logging in again<br>
+          • Verify you have permission to access this feature<br>
+          • Check browser console for more details
+        </small>
+      </div>
     </div>
 
     <!-- Upload Zone (hide when preview exists) -->
@@ -26,8 +35,8 @@
     </div>
 
     <!-- Preview Section -->
-    <div *ngIf="preview" class="preview-container animated-section">
-      <img [src]="preview" alt="File preview" class="preview-image">
+    <div *ngIf="preview" class="preview-container animated-section" style="display: block !important; visibility: visible !important;">
+      <img [src]="preview" alt="File preview" class="preview-image" style="display: block !important; visibility: visible !important;">
       <p class="preview-text">✓ Image validated and ready</p>
     </div>
 

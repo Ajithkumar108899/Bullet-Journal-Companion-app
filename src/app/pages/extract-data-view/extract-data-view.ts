@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { timer } from 'rxjs';
-
+interface ExtractedItem {
+  title: string;
+  type: string;
+  symbol: string;
+  status: string;
+  createdDate: string;
+}
 @Component({
   selector: 'app-extract-data-view',
   imports: [CommonModule],
@@ -10,38 +16,59 @@ import { timer } from 'rxjs';
 })
 export class ExtractDataView {
  loading = false;
-  result: any = null;
 
-  /** Trigger Extraction */
+  extractedItems: ExtractedItem[] = [];
+
   startExtraction() {
     this.loading = true;
-    this.result = null;
 
-    // Simulated API delay (dummy data)
-    timer(2000).subscribe(() => {
+    setTimeout(() => {
+      this.extractedItems = [
+        {
+          title: 'Feeling Happy',
+          type: 'Emotion',
+          symbol: '😊',
+          status: 'None',
+          createdDate: 'Dec 7, 10:32 AM',
+        },
+        {
+          title: 'Hackathon Participation',
+          type: 'Progress',
+          symbol: '/',
+          status: 'In Progress',
+          createdDate: 'Dec 7, 09:10 AM',
+        },
+        {
+          title: 'Pongal Event',
+          type: 'Event',
+          symbol: 'O',
+          status: 'Upcoming',
+          createdDate: 'Dec 7, 08:20 AM',
+        },
+        {
+          title: 'Completed Report',
+          type: 'Completed',
+          symbol: 'X',
+          status: 'Completed',
+          createdDate: 'Dec 6, 06:30 PM',
+        },
+        {
+          title: 'Buy Fruits',
+          type: 'Note',
+          symbol: '-',
+          status: 'None',
+          createdDate: 'Dec 6, 06:20 PM',
+        },
+        {
+          title: 'Be Creative Today',
+          type: 'Inspiration',
+          symbol: '*',
+          status: 'None',
+          createdDate: 'Dec 6, 06:15 PM',
+        },
+      ];
+
       this.loading = false;
-
-      this.result = {
-        symbols: ["✔", "★", "⚠", "❗"],
-        status: "Approved",
-        categories: ["Task", "Priority", "Reminder"],
-
-        normalized: {
-          id: "TASK-001",
-          title: "Buy Groceries",
-          status: "Approved",
-          priority: "High",
-          createdAt: "2025-01-08T10:30:00Z",
-          detectedSymbols: ["✔", "★"],
-        }
-      };
-    });
+    }, 1200);
   }
-
-  /** Reset Data */
-  reset() {
-    this.result = null;
-    this.loading = false;
-  }
-
 }
