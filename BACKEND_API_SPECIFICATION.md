@@ -1,4 +1,4 @@
-# Backend API Specification for MindNote Journal
+# Backend API Specification for MatrixJournal Journal
 
 ## Base URL
 ```

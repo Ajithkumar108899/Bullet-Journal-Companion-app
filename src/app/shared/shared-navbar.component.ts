@@ -13,7 +13,7 @@ import { AuthService } from '../core/services/auth.service';
       <div class="navbar-brand-section">
         <a class="navbar-brand" routerLink="/dashboard">
           <span class="brand-icon">📔</span>
-          <span class="brand-text">MindNote</span>
+          <span class="brand-text">MatrixJournal</span>
         </a>
       </div>
       
