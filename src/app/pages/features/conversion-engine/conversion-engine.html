@@ -3,11 +3,17 @@
   <div class="header-section">
     <h2 class="title">⚙️ Conversion Engine</h2>
     <p class="subtitle">Convert extracted data into multiple export formats</p>
+    <button *ngIf="!loading" class="refresh-btn" (click)="loadData()">🔄 Refresh</button>
   </div>
 
   <div *ngIf="loading" class="loading-wrapper">
     <div class="spinner-border"></div>
     <p class="loading-text">Preparing conversions...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>⚠️ {{ error }}</p>
+    <button class="retry-btn" (click)="loadData()">Retry</button>
   </div>
 
   <div *ngIf="!loading" class="conversion-grid">

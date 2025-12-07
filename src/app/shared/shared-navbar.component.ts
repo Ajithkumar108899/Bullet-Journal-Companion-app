@@ -41,7 +41,7 @@ import { AuthService } from '../core/services/auth.service';
           <li class="nav-item">
             <a class="nav-link" routerLink="/scanandupload" routerLinkActive="active" (click)="closeMenu()">
               <span class="nav-icon">📷</span>
-              <span class="nav-text">Scan & Update</span>
+              <span class="nav-text">Scan & Upload</span>
             </a>
           </li>
           <li class="nav-item">

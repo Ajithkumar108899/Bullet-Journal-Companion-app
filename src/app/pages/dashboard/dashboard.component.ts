@@ -23,6 +23,7 @@ export class DashboardComponent implements OnInit {
       notes: all.filter(e => e.type === 'note').length,
       events: all.filter(e => e.type === 'event').length,
       habits: all.filter(e => e.type === 'habit').length,
+      emotions: all.filter(e => e.type === 'emotion').length, // Added emotions stat
       completed: all.filter(e => e.completed).length,
       pending: all.filter(e => !e.completed && e.type === 'task').length
     };
@@ -75,7 +76,8 @@ export class DashboardComponent implements OnInit {
       task: '✓',
       note: '📝',
       event: '📅',
-      habit: '🔄'
+      habit: '🔄',
+      emotion: '😊' // Added emotion icon
     };
     return icons[type] || '•';
   }
@@ -85,7 +87,8 @@ export class DashboardComponent implements OnInit {
       task: '#3b82f6',
       note: '#10b981',
       event: '#f59e0b',
-      habit: '#8b5cf6'
+      habit: '#8b5cf6',
+      emotion: '#ef4444' // Added emotion color
     };
     return colors[type] || '#6b7280';
   }

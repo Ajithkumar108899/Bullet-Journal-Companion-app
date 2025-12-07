@@ -1,25 +1,79 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ConversionEngineService } from '../../../core/services/conversion-engine.service';
 import { CommonModule, NgIf } from '@angular/common';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-conversion-engine',
-  imports: [CommonModule,NgIf],
+  imports: [CommonModule, NgIf],
   templateUrl: './conversion-engine.html',
   styleUrl: './conversion-engine.css',
 })
-export class ConversionEngine {
- loading = true;
-  data: any = {};
+export class ConversionEngine implements OnInit {
+  loading = true;
+  data: { taskpaper?: string; markdown?: string } = {};
   selectedProfile: string | null = null;
   showExportOptions = false;
+  error: string | null = null;
 
-  constructor(private conversionService: ConversionEngineService) {}
+  constructor(
+    private conversionService: ConversionEngineService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.conversionService.getConvertedReport().subscribe((res) => {
-      this.data = res;
-      this.loading = false;
+    // Reset state
+    this.loading = true;
+    this.error = null;
+    this.data = {};
+    
+    // Automatically load data when component initializes
+    console.log('🔄 ConversionEngine component initialized, loading data...');
+    this.loadData();
+  }
+
+  loadData() {
+    this.loading = true;
+    this.error = null;
+    
+    console.log('📡 Fetching conversion data from API...');
+    
+    this.conversionService.getConvertedReport().pipe(
+      finalize(() => {
+        // Ensure loading state is always cleared (fallback)
+        if (this.loading) {
+          this.loading = false;
+        }
+        if (this.cdr) {
+          this.cdr.detectChanges();
+        }
+      })
+    ).subscribe({
+      next: (res) => {
+        console.log('✅ Conversion data loaded successfully:', res);
+        // Update state
+        this.data = res;
+        this.loading = false;
+        // Force change detection
+        if (this.cdr) {
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error loading conversion data:', err);
+        // Update state
+        this.error = 'Failed to load conversion data. Please try again.';
+        this.loading = false;
+        // Set default empty data
+        this.data = {
+          taskpaper: '# Tasks\n\nNo tasks found.\n',
+          markdown: '# Notes & Emotions\n\nNo notes or emotions found.\n'
+        };
+        // Force change detection
+        if (this.cdr) {
+          this.cdr.detectChanges();
+        }
+      }
     });
   }
 

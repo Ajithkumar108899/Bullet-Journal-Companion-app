@@ -7,19 +7,30 @@
 
     <div class="text-center mt-3">
       <button class="btn btn-primary btn-lg px-4 rounded-pill"
-              (click)="startExtraction()" [disabled]="loading">
-        ⚡ Start Extraction
+              (click)="startExtraction()">
+        <span *ngIf="!loading">⚡ Refresh Data</span>
+        <span *ngIf="loading">⏳ Loading...</span>
       </button>
     </div>
 
     <div *ngIf="loading" class="text-center mt-3">
       <div class="spinner-border text-primary"></div>
-      <p class="text-muted mt-2">Analyzing document...</p>
+      <p class="text-muted mt-2">Loading extracted data...</p>
     </div>
   </div>
 
+  <!-- ERROR MESSAGE -->
+  <div *ngIf="errorMsg" class="alert alert-danger" role="alert">
+    {{ errorMsg }}
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!loading && !errorMsg && extractedItems.length === 0" class="text-center py-5">
+    <p class="text-muted">No extracted data found. Scan a journal page to get started!</p>
+  </div>
+
   <!-- CARD GRID -->
-  <div class="row g-4" *ngIf="!loading">
+  <div class="row g-4" *ngIf="!loading && extractedItems.length > 0">
 
     <div class="col-md-6 col-lg-4" *ngFor="let item of extractedItems">
 

@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { OcrService } from '../../core/services/ocr.service';
 import { AuthService } from '../../core/services/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -23,12 +24,14 @@ export class OcrUpload implements AfterViewInit {
   file!: File;
   pageNumber: number = 1;
   threadId: string = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
+  private routingScheduled = false; // Flag to prevent multiple routing attempts
 
   constructor(
     private http: HttpClient, 
     private ocrService: OcrService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngAfterViewInit() {
@@ -136,6 +139,7 @@ export class OcrUpload implements AfterViewInit {
     this.scanning = true;
     this.errorMsg = null;
     this.scannedText = null;
+    this.routingScheduled = false; // Reset routing flag
 
     // Create FormData with required fields
     const formData = new FormData();
@@ -209,30 +213,121 @@ export class OcrUpload implements AfterViewInit {
         finalize(() => {
           this.scanning = false;
           this.cdr.detectChanges();
+          
+          // Fallback: If routing wasn't scheduled in subscribe, schedule it here
+          // This ensures routing happens even if response handling fails
+          if (!this.routingScheduled && !this.errorMsg) {
+            this.routingScheduled = true;
+            console.log('⏱️ Scan process complete (finalize), will route to Extracted Data View in 5 seconds...');
+            setTimeout(() => {
+              console.log('🚀 Routing to Extracted Data View (from finalize)...');
+              try {
+                this.router.navigate(['/extractdataview']).then(
+                  (success) => {
+                    if (success) {
+                      console.log('✅ Successfully navigated to Extracted Data View');
+                    } else {
+                      console.error('❌ Navigation failed - route might not exist');
+                    }
+                  }
+                ).catch((error) => {
+                  console.error('❌ Navigation error:', error);
+                });
+              } catch (error) {
+                console.error('❌ Error during navigation:', error);
+              }
+            }, 5000);
+          }
         })
       )
-      .subscribe(response => {
-        if (response) {
+      .subscribe({
+        next: (response) => {
+          console.log('✅ Scan API response received:', response);
+          
+          // Extract journalPageId from response and store it
+          let journalPageId: number | null = null;
+          
           // Handle different possible response formats
-          if (response.text) {
-            this.scannedText = response.text;
-          } else if (response.data?.text) {
-            this.scannedText = response.data.text;
-          } else if (response.extractedText) {
-            this.scannedText = response.extractedText;
-          } else if (typeof response === 'string') {
-            this.scannedText = response;
+          if (response) {
+            if (Array.isArray(response) && response.length > 0) {
+              // If response is an array (multiple pages scanned), use the first one
+              const firstResponse = response[0];
+              journalPageId = firstResponse.journalPageId || null;
+              
+              if (firstResponse.extractedText) {
+                this.scannedText = firstResponse.extractedText;
+              } else if (firstResponse.text) {
+                this.scannedText = firstResponse.text;
+              } else {
+                this.scannedText = 'Scan completed successfully.';
+              }
+            } else if (response.journalPageId) {
+              // Single response with journalPageId
+              journalPageId = response.journalPageId;
+              
+              if (response.extractedText) {
+                this.scannedText = response.extractedText;
+              } else if (response.text) {
+                this.scannedText = response.text;
+              } else if (response.data?.text) {
+                this.scannedText = response.data.text;
+              } else {
+                this.scannedText = 'Scan completed successfully.';
+              }
+            } else if (response.text) {
+              this.scannedText = response.text;
+            } else if (response.data?.text) {
+              this.scannedText = response.data.text;
+            } else if (response.extractedText) {
+              this.scannedText = response.extractedText;
+            } else if (typeof response === 'string') {
+              this.scannedText = response;
+            } else {
+              // If response is an object, try to stringify it
+              this.scannedText = 'Scan completed successfully.';
+            }
           } else {
-            // If response is an object, try to stringify it
-            this.scannedText = JSON.stringify(response, null, 2);
+            // Response is null/empty but API call succeeded
+            this.scannedText = 'Scan completed successfully.';
+          }
+          
+          // Store journalPageId in localStorage for ExtractDataView to use
+          if (journalPageId) {
+            localStorage.setItem('bjc:lastScanPageId', journalPageId.toString());
+            console.log('💾 Stored journalPageId for extracted data view:', journalPageId);
           }
           
           // Update step indicator
-          if (this.scannedText) {
-            this.cdr.detectChanges();
+          this.cdr.detectChanges();
+          
+          // After 5 seconds, route to Extracted Data View (ALWAYS, regardless of response format)
+          if (!this.routingScheduled) {
+            this.routingScheduled = true;
+            console.log('⏱️ Scan complete, will route to Extracted Data View in 5 seconds...');
+            setTimeout(() => {
+              console.log('🚀 Routing to Extracted Data View...');
+              try {
+                this.router.navigate(['/extractdataview']).then(
+                  (success) => {
+                    if (success) {
+                      console.log('✅ Successfully navigated to Extracted Data View');
+                    } else {
+                      console.error('❌ Navigation failed - route might not exist');
+                    }
+                  }
+                ).catch((error) => {
+                  console.error('❌ Navigation error:', error);
+                });
+              } catch (error) {
+                console.error('❌ Error during navigation:', error);
+              }
+            }, 5000);
           }
-        } else if (!this.errorMsg) {
-          this.errorMsg = 'No response from server.';
+        },
+        error: (error) => {
+          // Error handling is already done in catchError pipe
+          // This should not be reached if catchError returns of(null)
+          console.error('❌ Subscribe error (unexpected):', error);
         }
       });
   }  

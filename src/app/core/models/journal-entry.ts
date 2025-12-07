@@ -1,4 +1,4 @@
-export type EntryType = 'task' | 'note' | 'event' | 'habit';
+export type EntryType = 'task' | 'note' | 'event' | 'habit' | 'emotion';
 
 export interface JournalEntry {
   id: string;

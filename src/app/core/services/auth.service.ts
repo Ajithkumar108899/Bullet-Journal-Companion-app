@@ -210,7 +210,86 @@ export class AuthService {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     this.currentUser.set(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']); // Navigate to home page
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+
+    // Try different possible refresh token endpoints
+    // Backend might use: /users/auth/refresh, /auth/refresh, /refresh
+    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/users/auth/refresh`, {
+      refreshToken: refreshToken
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json'
+      }
+    }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // If first endpoint fails, try alternative endpoint
+        if (error.status === 404) {
+          return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/refresh`, {
+            refreshToken: refreshToken
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'accept': 'application/json'
+            }
+          });
+        }
+        return throwError(() => error);
+      }),
+      map((response: any) => {
+        // Update tokens
+        const accessToken = response.accessToken || response.token;
+        const newRefreshToken = response.refreshToken || refreshToken; // Keep old if new not provided
+        
+        if (accessToken) {
+          localStorage.setItem(TOKEN_KEY, accessToken);
+        }
+        if (newRefreshToken && newRefreshToken !== refreshToken) {
+          localStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
+        }
+
+        return {
+          success: true,
+          message: 'Token refreshed successfully',
+          user: this.currentUser()!,
+          accessToken: accessToken,
+          refreshToken: newRefreshToken,
+          tokenType: response.tokenType || 'Bearer',
+          expiresIn: response.expiresIn,
+          token: accessToken
+        };
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // If refresh fails, logout user
+        console.error('Token refresh failed:', error);
+        this.logout();
+        return throwError(() => new Error('Token refresh failed. Please login again.'));
+      })
+    );
+  }
+
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+
+    try {
+      // Decode JWT token (simple base64 decode, no verification)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000; // Convert to milliseconds
+      const now = Date.now();
+      
+      // Check if token expires in less than 5 minutes (refresh before expiry)
+      return now >= (exp - 5 * 60 * 1000);
+    } catch {
+      return true; // If token is invalid, consider it expired
+    }
   }
 
   isAuthenticated(): boolean {
