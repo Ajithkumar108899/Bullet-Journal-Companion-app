@@ -12,8 +12,9 @@ import { AuthService } from '../core/services/auth.service';
     <div class="navbar-container">
       <div class="navbar-brand-section">
         <a class="navbar-brand" routerLink="/dashboard">
-          <span class="brand-icon">📔</span>
-          <span class="brand-text">MatrixJournal</span>
+          <span class="brand-icon"></span>
+          <span class="brand-text">Soul🌟Note</span>
+          <!-- <span class="brand-icon">📔</span> -->
         </a>
       </div>
       
@@ -203,7 +204,7 @@ import { AuthService } from '../core/services/auth.service';
         align-items: center;
         gap: 2rem;
         flex: 1;
-        justify-content: space-between;
+        justify-content: flex-end;
       }
 
       .nav-links {
@@ -211,7 +212,7 @@ import { AuthService } from '../core/services/auth.service';
         align-items: center;
         gap: 0.5rem;
         list-style: none;
-        margin: 0;
+        margin: 0 0 0 20px;
         padding: 0;
       }
 
